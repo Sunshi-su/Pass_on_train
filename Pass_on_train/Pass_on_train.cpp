@@ -18,7 +18,7 @@ int zov;
 
 void hachalo() {
 	ifstream tablo;
-	tablo.open("C:\\Users\julia\source\repos\Pass_on_train\Pass_on_train\Dis.txt", ios::in);
+	tablo.open("Dis.txt", ios::in);
 	string t;
 	do {
 		cout << "\n=== КЖД ===" << endl;
