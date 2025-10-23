@@ -16,15 +16,35 @@ struct Passenger {
 
 int zov;
 
-void hachalo() {
+Passenger inputPassengerData() {
+	Passenger passenger;
+	cout << "\n=== ДАННЫЕ ПАССАЖИРА ===" << endl;
+	cout << "Введите фамилию: ";
+	cin >> passenger.Familia;
+	cout << "Введите имя: ";
+	cin >> passenger.Imya;
+	cout << "Введите отчество: ";
+	cin >> passenger.Otchestvo;
+	cout << "Введите номер паспорта: ";
+	cin >> passenger.passport;
+
+	return passenger;
+}
+
+void nachalo() {
 	ifstream tablo;
-	tablo.open("Dis.txt", ios::in);
+	tablo.open("C:/Users/Александр/Desktop/812/c=3.txt", ios::in);
+	if (!tablo) {
+		cout << "Error input file" << endl;
+	}
+
 	string t;
 	do {
 		cout << "\n=== КЖД ===" << endl;
 		cout << "1. Показать доступные поезда" << endl;
 		cout << "2. Купить билет" << endl;
-		cout << "Выберите действие (1-2): ";
+		cout << "3. Выход" << endl;
+		cout << "Выберите действие (1-3): ";
 		cin >> zov;
 
 		switch (zov) {
@@ -37,9 +57,22 @@ void hachalo() {
 
 
 			  break;
-		case 2:
+		case 2: inputPassengerData();
+
+
+
+
+
+
 			break;
 
+
+
+
+
+
+		case 3:
+			break;
 
 		default:
 			cout << "Такого варианта нет!!!" << endl;
@@ -47,28 +80,20 @@ void hachalo() {
 		}
 
 		cout << "__________________________________________" << endl;
-	} while (zov);
+	} while (zov != 3);
 
 
 
 
 
+	tablo.close();
 }
-
-
-
-
-
-
-
 
 int main() {
 	setlocale(LC_ALL, "RUS");
-	cout.imbue(locale("rus_rus.866"));
-	cin.imbue(locale("rus_rus.866"));
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	hachalo();
+	nachalo();
 
 
 
