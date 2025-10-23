@@ -40,6 +40,15 @@ void vivod() {
 
 }
 
+
+void kyda() {
+	cout << "______________________________________________________" << endl;
+	cout << "===Выбирите направление:===" << endl;
+	string k;
+		cin >> k;
+		cout << k << endl;
+
+}
 Passenger inputPassengerData() {
 	Passenger passenger;
 	cout << "\n=== ДАННЫЕ ПАССАЖИРА ===" << endl;
@@ -77,7 +86,7 @@ void nachalo() {
 
 			break;
 		case 2: 
-
+			kyda();
 
 
 
