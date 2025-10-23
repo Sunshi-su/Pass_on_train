@@ -16,6 +16,30 @@ struct Passenger {
 
 int zov;
 
+void spisok() {
+	ifstream tablo;
+	tablo.open("C:/Users/243557/Desktop/c=3.txt", ios::in);
+	if (!tablo) {
+		cout << "Error input file" << endl;
+	}
+	string t;
+
+	while (tablo) {
+		if (getline(tablo, t))
+			cout << t << endl;
+
+	}
+
+
+	tablo.close();
+}
+
+void vivod() {
+	cout << "______________________________________________________" << endl;
+	cout<< "Номер" <<"   " << "Откуда" << "  " << "Куда" << "            " << "Отпр" << "  " << "Приб" << "     " << "Кол-во" << endl;
+
+}
+
 Passenger inputPassengerData() {
 	Passenger passenger;
 	cout << "\n=== ДАННЫЕ ПАССАЖИРА ===" << endl;
@@ -32,13 +56,9 @@ Passenger inputPassengerData() {
 }
 
 void nachalo() {
-	ifstream tablo;
-	tablo.open("C:/Users/Александр/Desktop/812/c=3.txt", ios::in);
-	if (!tablo) {
-		cout << "Error input file" << endl;
-	}
 
-	string t;
+
+
 	do {
 		cout << "\n=== КЖД ===" << endl;
 		cout << "1. Показать доступные поезда" << endl;
@@ -48,16 +68,15 @@ void nachalo() {
 		cin >> zov;
 
 		switch (zov) {
-		case 1:while (tablo) {
-			if (getline(tablo, t))
-				cout << t << endl;
-		}
+		case 1: vivod();
+			spisok();
 
 
 
 
-			  break;
-		case 2: inputPassengerData();
+
+			break;
+		case 2: 
 
 
 
@@ -79,14 +98,14 @@ void nachalo() {
 
 		}
 
-		cout << "__________________________________________" << endl;
+		cout << "______________________________________________________" << endl;
 	} while (zov != 3);
 
 
 
 
 
-	tablo.close();
+
 }
 
 int main() {
