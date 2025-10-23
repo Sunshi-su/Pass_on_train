@@ -1,0 +1,27 @@
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iomanip>
+
+
+using namespace std;
+
+
+int main()
+{
+    setlocale(LC_ALL, "Russian");
+
+    cout << "------------------------------------------------------------" << endl;
+    cout << " | Номер билета: " << " " << left <<  " " << setw(20)<< " |" << endl;
+    cout << " | Поезд: №" << setw(25) << left << " " << "Дата: " << setw(17) << left << " " << " |" << endl;
+    cout << " | Маршрут: " << " " << left <<  " " << " |" << endl;
+    cout << " | Пассажир: " << " " << left << " " << " |" << endl;
+    cout << " | Паспорт: " << " " << left << " " << " |" << endl;
+    cout << " | Вагон: " << setw(15) << left << " "
+        << "Место: " << setw(8) << left << " "
+        << "Стоимость: " << setw(10) << left << "  " << " |" << endl;
+    cout << " | Время: " << " " << left << " " << " |" << endl;
+    cout << "------------------------------------------------------------" << endl;
+
+}
