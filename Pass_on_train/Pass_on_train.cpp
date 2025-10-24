@@ -36,22 +36,27 @@ void spisok() {
 
 void vivod() {
 	cout << "______________________________________________________" << endl;
-	cout<< "Номер" <<"   " << "Откуда" << "  " << "Куда" << "            " << "Отпр" << "  " << "Приб" << "     " << "Кол-во" << endl;
+	cout << "Номер" << "   " << "Откуда" << "  " << "Куда" << "            " << "Отпр" << "  " << "Приб" << "     " << "Кол-во" << endl;
 
 }
 
 
 void kyda() {
+	ifstream bablo;
+	bablo.open("C:/Users/243557/Desktop/Москва-Питер.txt", ios::in);
+	if (!bablo) {
+		cout << "Error input file" << endl;
+	}
 	cout << "______________________________________________________" << endl;
 	cout << "===Выбирите направление:===" << endl;
-	string k;
-		cin >> k;
-		cout << k << endl;
+	char k;
+	cin >> k;
+	cout << k << endl;
 
 }
 Passenger inputPassengerData() {
 	Passenger passenger;
-	cout << "\n=== ДАННЫЕ ПАССАЖИРА ===" << endl;
+	cout << "\n=== ДАННЫЕ ПАССАЖИРА ===\n" << endl;
 	cout << "Введите фамилию: ";
 	cin >> passenger.Familia;
 	cout << "Введите имя: ";
@@ -64,12 +69,32 @@ Passenger inputPassengerData() {
 	return passenger;
 }
 
+void tiket() {
+	cout << "------------------------------------------------------------" << endl;
+	cout << "| Номер билета: " << setw(41) << " " << left << " " << " |" << endl;
+	cout << "| Поезд: №" << setw(30) << left << " " << "Дата: " << setw(12) << left << " " << " |" << endl;
+	cout << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
+	cout << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
+	cout << "| Маршрут: " << setw(46) << " " << left << " " << " |" << endl;
+	cout << "| Тип поезда: " << setw(43) << " " << left << " " << " |" << endl;
+	cout << "| Тип вагона: " << setw(43) << " " << left << " " << " |" << endl;
+	cout << "| Пассажир: " << setw(46) << left << " " << " |" << endl;
+	cout << "| Место: " << setw(30) << left << " "
+		<< " Стоимость: " << setw(7) << left << "  " << " |" << endl;
+	cout << "------------------------------------------------------------" << endl;
+
+
+
+
+
+}
+
 void nachalo() {
 
 
 
 	do {
-		cout << "\n=== КЖД ===" << endl;
+		cout << "\n=== РЖД ===\n" << endl;
 		cout << "1. Показать доступные поезда" << endl;
 		cout << "2. Купить билет" << endl;
 		cout << "3. Выход" << endl;
@@ -85,7 +110,7 @@ void nachalo() {
 
 
 			break;
-		case 2: 
+		case 2:
 			kyda();
 
 
@@ -107,7 +132,7 @@ void nachalo() {
 
 		}
 
-		cout << "______________________________________________________" << endl;
+		cout << "_____________________________________________________" << endl;
 	} while (zov != 3);
 
 
