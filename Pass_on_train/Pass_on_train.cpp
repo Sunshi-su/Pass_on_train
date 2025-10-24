@@ -4,6 +4,9 @@
 #include <iomanip>
 #include <fstream>
 #include <windows.h>
+#include <algorithm>
+#include <regex>
+#include <sstream>
 
 using namespace std;
 
@@ -17,8 +20,8 @@ struct Passenger {
 int zov;
 
 void spisok() {
-	ifstream tablo;
-	tablo.open("C:/Users/243557/Desktop/c=3.txt", ios::in);
+	fstream tablo;
+	tablo.open("../c=3.txt", ios::in);
 	if (!tablo) {
 		cout << "Error input file" << endl;
 	}
@@ -27,33 +30,169 @@ void spisok() {
 	while (tablo) {
 		if (getline(tablo, t))
 			cout << t << endl;
-
 	}
-
-
 	tablo.close();
 }
 
 void vivod() {
 	cout << "______________________________________________________" << endl;
-	cout << "Номер" << "   " << "Откуда" << "  " << "Куда" << "            " << "Отпр" << "  " << "Приб" << "     " << "Кол-во" << endl;
-
+	cout << "Номер" << "   " << "Откуда" << "  " << "Куда" << "            " << "Отпр." << "  " << "Приб." << "     " << "Кол-во" << endl;
 }
 
 
-void kyda() {
-	ifstream bablo;
-	bablo.open("C:/Users/243557/Desktop/Москва-Питер.txt", ios::in);
-	if (!bablo) {
-		cout << "Error input file" << endl;
-	}
+void direction_train() {
+
+	fstream Dir;
 	cout << "______________________________________________________" << endl;
 	cout << "===Выбирите направление:===" << endl;
-	char k;
-	cin >> k;
-	cout << k << endl;
+	cout << "Поиск: ";
+	string direction;
+	cin >> direction;
+	transform(direction.begin(), direction.end(), direction.begin(), ::tolower); //Устойчивость к регистру направления
+
+	if (direction == "казань")
+	{
+		Dir.open("../Казань.txt");
+		if (!Dir) 
+		{
+			cout << "Error input file" << endl;
+		}
+		string n;
+		string stantion;
+		int index;
+		const int N = 7, M =2;
+		vector<vector<string>> matrix_str(M);
+
+		while (Dir) 
+		{
+			if (getline(Dir, n)){
+
+				stringstream ss(n);
+				string segment;
+
+				// Разделяем по "->"
+				while (getline(ss, segment, '-')) {
+					if (segment == ">") continue; // пропустить ">" если попадётся
+
+					// Убираем лишние пробелы
+					segment.erase(0, segment.find_first_not_of(" >"));
+					segment.erase(segment.find_last_not_of(" >") + 1);
+
+					// Используем регулярное выражение для выделения названия и расстояния
+					smatch match;
+					regex re(R"((.+?)(?:\((\d+)\))?$)"); // название(число)
+					if (regex_match(segment, match, re)) {
+						string name = match[1];
+						string dist = match[2].matched ? match[2].str() : "0";
+						matrix_str[0].push_back(name);
+						matrix_str[1].push_back(dist);
+					}
+				}
+
+
+
+				cout << "------------------------------------------------------------------------------------------------------------------------" << endl;
+				cout << "=== Доступные остановки по данному направлению ===" << endl;
+				cout << " " << endl;
+				cout << n << endl;
+				cout << " " << endl;
+				cout << "-----------------Выберите станцию --------------------------------------------------------------------------------------" << endl;
+				cout << "Станция: ";
+				cin >> stantion;
+				stantion.erase(0, stantion.find_first_not_of(" "));
+				stantion.erase(stantion.find_last_not_of(" ") + 1);
+
+				bool found = false;
+				int stationIndex = -1;
+				int kmToStation = 0;
+
+				for (int i = 0; i < matrix_str[0].size(); ++i) {
+					if (matrix_str[0][i] == stantion) {
+						found = true;
+						stationIndex = i;
+						stringstream ss(matrix_str[1][i]);
+						ss >> kmToStation;
+						break;
+					}
+				}
+			}
+				
+		}
+		Dir.close();
+
+	}
+
+	else if(direction == "сочи") {
+		Dir.open("../Сочи.txt");
+		if (!Dir)
+		{
+			cout << "Error input file" << endl;
+		}
+		string n;
+		string stantion;
+		int index;
+		const int N = 7, M = 2;
+		vector<vector<string>> matrix_str(M);
+
+		while (Dir)
+		{
+			if (getline(Dir, n)) {
+
+				stringstream ss(n);
+				string segment;
+
+				
+				while (getline(ss, segment, '-')) {
+					if (segment == ">") continue;
+
+					segment.erase(0, segment.find_first_not_of(" >"));
+					segment.erase(segment.find_last_not_of(" >") + 1);
+
+					smatch match;
+					regex re(R"((.+?)(?:\((\d+)\))?$)"); // название(число)
+					if (regex_match(segment, match, re)) {
+						string name = match[1];
+						string dist = match[2].matched ? match[2].str() : "0";
+						matrix_str[0].push_back(name);
+						matrix_str[1].push_back(dist);
+					}
+				}
+
+
+
+				cout << "------------------------------------------------------------------------------------------------------------------------" << endl;
+				cout << "=== Доступные остановки по данному направлению ===" << endl;
+				cout << " " << endl;
+				cout << n << endl;
+				cout << " " << endl;
+				cout << "-----------------Выберите станцию --------------------------------------------------------------------------------------" << endl;
+				cout << "Станция: ";
+				cin >> stantion;
+				stantion.erase(0, stantion.find_first_not_of(" "));
+				stantion.erase(stantion.find_last_not_of(" ") + 1);
+
+				bool found = false;
+				int stationIndex = -1;
+				int kmToStation = 0;
+
+				for (int i = 0; i < matrix_str[0].size(); ++i) {
+					if (matrix_str[0][i] == stantion) {
+						found = true;
+						stationIndex = i;
+						stringstream ss(matrix_str[1][i]);
+						ss >> kmToStation;
+						break;
+					}
+				}
+			}
+
+		}
+		Dir.close();
+	}
+
 
 }
+
 Passenger inputPassengerData() {
 	Passenger passenger;
 	cout << "\n=== ДАННЫЕ ПАССАЖИРА ===\n" << endl;
@@ -89,9 +228,7 @@ void tiket() {
 
 }
 
-void nachalo() {
-
-
+void start() {
 
 	do {
 		cout << "\n=== РЖД ===\n" << endl;
@@ -102,27 +239,15 @@ void nachalo() {
 		cin >> zov;
 
 		switch (zov) {
-		case 1: vivod();
+		case 1: 
+			vivod();
 			spisok();
-
-
-
-
-
 			break;
+
 		case 2:
-			kyda();
-
-
-
-
+			direction_train();
 
 			break;
-
-
-
-
-
 
 		case 3:
 			break;
@@ -135,23 +260,13 @@ void nachalo() {
 		cout << "_____________________________________________________" << endl;
 	} while (zov != 3);
 
-
-
-
-
-
 }
 
 int main() {
 	setlocale(LC_ALL, "RUS");
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	nachalo();
-
-
-
-
+	start();
 	return 0;
-
-
 }
+
