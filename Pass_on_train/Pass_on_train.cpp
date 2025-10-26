@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <regex>
 #include <sstream>
+#include <random>
 
 using namespace std;
+
 
 struct Passenger {
 	string Familia;
@@ -32,7 +34,7 @@ void vivod() {
 }
 void spisok() {
 	fstream tablo;
-	tablo.open("../trains.txt", ios::in);
+	tablo.open("C:/Users/Александр/Desktop/trains.txt", ios::in);
 	if (!tablo) {
 		cout << "Error input file" << endl;
 	}
@@ -44,18 +46,18 @@ void spisok() {
 	}
 	tablo.close();
 }
-
+string number;
 void type_ot_train() {
 	cout << "-----------------Доступные поезда -------------------------------------------------------------------------------------" << endl;
 	fstream tablo;
 	string s;
-	int confirmation=0;
-	tablo.open("../trains.txt", ios::in);
+	int confirmation = 0;
+	tablo.open("C:/Users/Александр/Desktop/trains.txt", ios::in);
 	if (!tablo) {
 		cout << "Error input file" << endl;
 	}
 	vivod();
-	while (tablo){
+	while (tablo) {
 		if (getline(tablo, s)) {
 			if (s.find(direction) != string::npos)
 			{
@@ -67,8 +69,8 @@ void type_ot_train() {
 	tablo.seekg(0);
 	cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
 
-	string number;
 	
+
 	do {
 		cout << "=== Укажите номер поезда ===" << endl;
 		cin >> number;
@@ -87,7 +89,7 @@ void type_ot_train() {
 				}
 			}
 		}
-	}while (confirmation !=1);
+	} while (confirmation != 1);
 
 	tablo.clear();
 	tablo.seekg(0);
@@ -114,25 +116,25 @@ void direction_train() {
 	cout << "______________________________________________________" << endl;
 	cout << "===Выбирите направление:===" << endl;
 	cout << "Поиск: ";
-	
+
 	cin >> direction;
 	transform(direction.begin(), direction.end(), direction.begin(), ::tolower); //Устойчивость к регистру направления
 
 	if (direction == "казань")
 	{
-		Dir.open("../Казань.txt");
-		if (!Dir) 
+		Dir.open("C:/Users/Александр/Desktop/Казань.txt");
+		if (!Dir)
 		{
 			cout << "Error input file" << endl;
 		}
 		string n;
 		string stantion;
-		const int N = 7, M =2;
+		const int N = 7, M = 2;
 		vector<vector<string>> matrix_str(M);
 
-		while (Dir) 
+		while (Dir)
 		{
-			if (getline(Dir, n)){
+			if (getline(Dir, n)) {
 
 				stringstream ss(n);
 				string segment;
@@ -182,14 +184,14 @@ void direction_train() {
 					}
 				}
 			}
-		
+
 		}
 		Dir.close();
 		direction = "Казань";
 	}
 
-	else if(direction == "сочи") {
-		Dir.open("../Сочи.txt");
+	else if (direction == "сочи") {
+		Dir.open("C:/Users/Александр/Desktop/Сочи.txt");
 		if (!Dir)
 		{
 			cout << "Error input file" << endl;
@@ -206,7 +208,7 @@ void direction_train() {
 				stringstream ss(n);
 				string segment;
 
-				
+
 				while (getline(ss, segment, '-')) {
 					if (segment == ">") continue;
 
@@ -254,7 +256,7 @@ void direction_train() {
 	}
 
 	else if (direction == "питер" || direction == "санкт-петербург" || direction == "санкт петербург") {
-		Dir.open("../Питер.txt");
+		Dir.open("C:/Users/Александр/Desktop/Питер.txt");
 		if (!Dir)
 		{
 			cout << "Error input file" << endl;
@@ -301,7 +303,7 @@ void direction_train() {
 				stantion.erase(0, stantion.find_first_not_of(" "));
 				stantion.erase(stantion.find_last_not_of(" ") + 1);
 
-				
+
 				int stationIndex = -1;
 
 				for (int i = 0; i < matrix_str[0].size(); ++i) {
@@ -319,12 +321,12 @@ void direction_train() {
 		Dir.close();
 	}
 
-	else 
+	else
 	{
 		cout << "Станция отсутствует в списке!" << endl;
 		found = false;
 	}
-	
+
 	if (found == true)
 	{
 		type_ot_train();
@@ -375,10 +377,19 @@ Passenger inputPassengerData() {
 }
 
 
+
+int gen() {
+	static random_device rd;
+	static mt19937 gen(rd());
+	static uniform_int_distribution<> dis(1000, 9999);
+
+	return dis(gen);
+}
+
 void tiket() {
 	cout << "------------------------------------------------------------" << endl;
-	cout << "| Номер билета: " << setw(41) << " " << left << " " << " |" << endl;
-	cout << "| Поезд: №" << setw(30) << left << " " << "Дата: " << setw(12) << left << " " << " |" << endl;
+	cout << "| Номер билета: " << gen() << setw(38) << left << " " << " |" << endl;
+	cout << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << setw(12) << left << " " << " |" << endl;
 	cout << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
 	cout << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
 	cout << "| Маршрут: " << setw(46) << " " << left << " " << " |" << endl;
@@ -402,7 +413,7 @@ void start() {
 		cin >> zov;
 
 		switch (zov) {
-		case 1: 
+		case 1:
 			vivod();
 			spisok();
 			break;
@@ -410,7 +421,8 @@ void start() {
 		case 2:
 			direction_train();
 			train_carriage();
-
+			inputPassengerData();
+			tiket();
 			break;
 
 		case 3:
@@ -433,4 +445,3 @@ int main() {
 	start();
 	return 0;
 }
-
