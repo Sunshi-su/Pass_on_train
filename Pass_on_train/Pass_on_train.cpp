@@ -8,6 +8,8 @@
 #include <regex>
 #include <sstream>
 #include <random>
+#include <chrono>
+#include <ctime>
 
 using namespace std;
 
@@ -386,10 +388,28 @@ int gen() {
 	return dis(gen);
 }
 
+string vremya() {
+	auto now = chrono::system_clock::now();
+	time_t time = chrono::system_clock::to_time_t(now);
+
+	char buffer[100];
+	tm time_info;
+
+	// Кроссплатформенное получение локального времени
+#ifdef _WIN32
+	localtime_s(&time_info, &time);
+#else
+	localtime_r(&time, &time_info);
+#endif
+
+	strftime(buffer, sizeof(buffer), "%d.%m.%Y", &time_info);
+	return string(buffer);
+}
+
 void tiket() {
 	cout << "------------------------------------------------------------" << endl;
 	cout << "| Номер билета: " << gen() << setw(38) << left << " " << " |" << endl;
-	cout << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << setw(12) << left << " " << " |" << endl;
+	cout << "| Поезд: №" << number << setw(27) << left << " " << "Дата: "<< vremya() << setw(2) << left << " " << " |" << endl;
 	cout << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
 	cout << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
 	cout << "| Маршрут: " << setw(46) << " " << left << " " << " |" << endl;
