@@ -44,21 +44,21 @@ const int P = 7, S = 2;
 vector<vector<string>> matrix_piter(S);
 
 struct time_arrival_kazan {
-	vector<int> time_default_train = { 4,6,7,8,10,11,13 };
-	vector<int> time_speed_train = { 3,4,5,6,7,8,10 };
-	vector<int> time_more_speed_train = { 2,3,4,5,6,7,8 };
+	vector<int> time_default_train = { 0,3,4,5,6,7,13 };
+	vector<int> time_speed_train = { 0,2,3,4,5,6,10 };
+	vector<int> time_more_speed_train = { 0,1,2,3,4,5,8 };
 };
 
 struct time_arrival_sochi {
-	vector<int> time_default_train = { 6,6,7,8,10,11,13 };
-	vector<int> time_speed_train = { 3,4,5,6,7,8,10 };
-	vector<int> time_more_speed_train = { 2,3,4,5,6,7,8 };
+	vector<int> time_default_train = { 0,6,7,18,19,21,23 };
+	vector<int> time_speed_train = { 0,5,6,17,18,10,21 };
+	vector<int> time_more_speed_train = { 0,2,3,8,9,12,14 };
 };
 
 struct time_arrival_piter {
-	vector<int> time_default_train = { 4,6,7,8,10,11,13 };
-	vector<int> time_speed_train = { 3,4,5,6,7,8,10 };
-	vector<int> time_more_speed_train = { 2,3,4,5,6,7,8 };
+	vector<int> time_default_train = { 0,1,3,4,5,6,8 };
+	vector<int> time_speed_train = { 0,1,2,3,4,5,7 };
+	vector<int> time_more_speed_train = { 0,1,1,2,3,4,6 };
 };
 
 void vivod() {
@@ -232,7 +232,7 @@ void direction_train() {
 			cout << "Error input file" << endl;
 		}
 		string n;
-		
+
 
 		while (Dir)
 		{
@@ -295,7 +295,7 @@ void direction_train() {
 			cout << "Error input file" << endl;
 		}
 		string n;
-		
+
 
 		while (Dir)
 		{
@@ -454,7 +454,7 @@ string vremya() {
 }
 
 void time_arrival() {
-	
+
 	if (trainType == "обычный") {
 
 	}
@@ -466,12 +466,12 @@ void tiket() {
 	cout << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << vremya() << setw(2) << left << " " << " |" << endl;
 	cout << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
 	cout << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
-	cout << "| Маршрут: " << "Москва -> "<<stantion<< setw(46) << " " << left << " " << " |" << endl;
+	cout << "| Маршрут: " << "Москва -> " << stantion << setw(46) << " " << left << " " << " |" << endl;
 	cout << "| Тип поезда: " << setw(43) << " " << left << " " << " |" << endl;
 	cout << "| Тип вагона: " << setw(43) << " " << left << " " << " |" << endl;
 	cout << "| Пассажир: " << setw(46) << left << " " << " |" << endl;
 	cout << "| Место: " << setw(30) << left << " "
-		<< " Стоимость: " <<price<< setw(7) << left << "  " << " |" << endl;
+		<< " Стоимость: " << price << setw(7) << left << "  " << " |" << endl;
 	cout << "------------------------------------------------------------" << endl;
 
 }
@@ -496,7 +496,7 @@ void start() {
 			direction_train();
 			train_carriage();
 			price_ticket();
-			if (next_func){
+			if (next_func) {
 				inputPassengerData();
 				tiket();
 			}
