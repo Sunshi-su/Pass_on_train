@@ -35,12 +35,15 @@ int zov;
 string direction;
 string stantion;
 string number;
+string depTime; //отправление
+string arrivalTime; //прибытие
+int stationIndex = -1;
 bool next_func = false;
 int kmToStation = 0;//множитель
 int price = 1;//переменная для итоговой цены
 string trainType;
 int typeTrain = 0;//множитель типа поезда 1-обычный, 2-скоростной, 3-высокоскоростной.
-string carriage; //Саш, это для билета переменная (тип вагона)
+string carriage; // (тип вагона)
 int x = 0;//можитель
 int time_train;
 //направление казань
@@ -53,14 +56,10 @@ vector<vector<string>> matrix_sochi(K);
 const int P = 7, S = 2;
 vector<vector<string>> matrix_piter(S);
 
-string defaul = "обычный";
-string speed = "скоростной";
-string more_speed = "высокоскоростной";
-
 struct time_arrival_kazan {
     vector<int> time_default_train = { 0,3,4,5,6,7,13 };
-    vector<int> time_speed_train = { 0,2,3,4,5,6,10 };
-    vector<int> time_more_speed_train = { 0,1,2,3,4,5,8 };
+    vector<int> time_speed_train = {0,2,3,4,5,6,10};
+    vector<int> time_more_speed_train = { 0,1,2,3,4,5,8};
 };
 
 struct time_arrival_sochi {
@@ -95,69 +94,165 @@ void spisok() {
     tablo.close();
 }
 
-void type_ot_train() {
-    cout << "-----------------Доступные поезда -------------------------------------------------------------------------------------" << endl;
-    fstream tablo;
-    string s;
-    int confirmation = 0;
-    tablo.open("../trains.txt", ios::in);
-    if (!tablo) {
-        cout << "Error input file" << endl;
-    }
-    vivod();
-    while (tablo) {
-        if (getline(tablo, s)) {
-            if (s.find(direction) != string::npos)
-            {
-                cout << s << endl;
-            }
+void time_arrival() {
+
+    int addHours = 0;
+    int h = stoi(depTime.substr(0, 2));
+    int m = stoi(depTime.substr(3, 2));
+
+
+    if (direction == "Казань") {
+        time_arrival_kazan t;
+        if (typeTrain == 1)
+        {
+            addHours = t.time_default_train[stationIndex];
+        }
+        if (typeTrain == 2)
+        {
+            addHours = t.time_speed_train[stationIndex];
+        }
+        if (typeTrain == 3)
+        {
+            addHours = t.time_more_speed_train[stationIndex];
         }
     }
-    tablo.clear();
-    tablo.seekg(0);
+
+    if (direction == "Сочи") {
+        time_arrival_sochi t;
+        if (typeTrain == 1)
+        {
+            addHours = t.time_default_train[stationIndex];
+        }
+        if (typeTrain == 2)
+        {
+            addHours = t.time_speed_train[stationIndex];
+        }
+        if (typeTrain == 3)
+        {
+            addHours = t.time_more_speed_train[stationIndex];
+        }
+    }
+
+    if (direction == "Санкт-Петербург") {
+        time_arrival_piter t;
+        if (typeTrain == 1)
+        {
+            addHours = t.time_default_train[stationIndex];
+        }
+        if (typeTrain == 2)
+        {
+            addHours = t.time_speed_train[stationIndex];
+        }
+        if (typeTrain == 3)
+        {
+            addHours = t.time_more_speed_train[stationIndex];
+        }
+    }
+
+    h += addHours;
+    h %= 24;
+
+    //HH:MM
+    string hh = to_string(h);
+    string mm = to_string(m);
+
+    if (hh.length() < 2)
+    {
+        hh = "0" + hh;
+    }
+    if (mm.length() < 2)
+    {
+        mm = "0" + mm;
+    }
+
+    arrivalTime = hh + ":" + mm;
+}
+
+void type_ot_train() 
+{
+    cout << "-----------------Доступные поезда -------------------------------------------------------------------------------------" << endl;
+
+    fstream tablo("../trains.txt", ios::in);
+    if (!tablo) {
+        cout << "Error input file" << endl;
+        return;
+    }
+
+    string s;
+    int confirmation = 0;
+
+    vivod();
+
+    // вывод поездов по направлению
+    while (getline(tablo, s)) {
+        if (s.find(direction) != string::npos) {
+            cout << s << endl;
+        }
+    }
+
     cout << "-----------------------------------------------------------------------------------------------------------------------" << endl;
 
+    // выбор поезда
     do {
         cout << "=== Укажите номер поезда ===" << endl;
         cin >> number;
+
+        confirmation = 0;
+
+        // перечитываем файл заново
         tablo.clear();
         tablo.seekg(0);
-        while (tablo) {
-            if (getline(tablo, s)) {
-                if (s.find(number) != string::npos)
-                {
-                    cout << "=== Выбранный поезд: ===" << endl;
-                    cout << s << endl;
-                    cout << "=== Подтвердить выбор поезда? ===" << endl;
-                    cout << "1 - подтвердить" << endl;
-                    cout << "2 - вернуться к выбору поездов" << endl;
-                    cin >> confirmation;
 
-                    if (s.find(speed) != string::npos) {
-                        trainType = "Cкоростной";
-                        typeTrain = 2;
-                    }
-                    if (s.find(more_speed) != string::npos) {
-                        trainType = "Высокоскоростной";
-                        typeTrain = 3;
-                    }
-                    if (s.find(defaul) != string::npos) {
-                        trainType = "Обычный";
-                        typeTrain = 1;
-                    }
+        while (getline(tablo, s)) {
+            if (s.find(number) != string::npos && s.find(direction) != string::npos) {
+
+                cout << "=== Выбранный поезд: ===" << endl;
+                cout << s << endl;
+
+                cout << "=== Подтвердить выбор поезда? ===" << endl;
+                cout << "1 - подтвердить" << endl;
+                cout << "2 - вернуться" << endl;
+                cin >> confirmation;
+
+                // тип поезда
+                if (s.find("высокоскоростной") != string::npos) {
+                    trainType = "Высокоскоростной";
+                    typeTrain = 3;
                 }
+                else if (s.find("скоростной") != string::npos) {
+                    trainType = "Скоростной";
+                    typeTrain = 2;
+                }
+                else {
+                    trainType = "Обычный";
+                    typeTrain = 1;
+                }
+
+                // время отправления HH:MM
+                int pos = s.find(':');
+                if (pos != string::npos) {
+                    depTime = s.substr(pos - 2, 5);
+                }
+
+                break;
             }
         }
+
     } while (confirmation != 1);
+
     cout << trainType;
-    tablo.clear();
-    tablo.seekg(0);
 
     tablo.close();
 }
 
 void direction_train() {
 
+    matrix_kazan[0].clear();
+    matrix_kazan[1].clear();
+    matrix_sochi[0].clear();
+    matrix_sochi[1].clear();
+    matrix_piter[0].clear();
+    matrix_piter[1].clear();
     bool found = false;
     fstream Dir;
     cout << "______________________________________________________" << endl;
@@ -165,7 +260,7 @@ void direction_train() {
     cout << "Поиск: ";
 
     cin >> direction;
-    transform(direction.begin(), direction.end(), direction.begin(), ::tolower); //Устойчивость к регистру направления
+    transform(direction.begin(), direction.end(), direction.begin(), ::tolower); //Устойчивость к регистру
 
     if (direction == "казань")
     {
@@ -175,7 +270,6 @@ void direction_train() {
             cout << "Error input file" << endl;
         }
         string n;
-        string stantion;
 
         while (Dir)
         {
@@ -186,21 +280,32 @@ void direction_train() {
 
                 // Разделяем по "->"
                 while (getline(ss, segment, '-')) {
-                    if (segment == ">") continue; // пропустить ">" если попадётся
-
-                    // Убираем лишние пробелы
+                    if (segment == ">") continue;
                     segment.erase(0, segment.find_first_not_of(" >"));
                     segment.erase(segment.find_last_not_of(" >") + 1);
 
-                    // Используем регулярное выражение для выделения названия и расстояния
-                    smatch match;
-                    regex re(R"((.+?)(?:\((\d+)\))?$)"); // название(число)
-                    if (regex_match(segment, match, re)) {
-                        string name = match[1];
-                        string dist = match[2].matched ? match[2].str() : "0";
-                        matrix_kazan[0].push_back(name);
-                        matrix_kazan[1].push_back(dist);
+                    string name;
+                    string dist = "0";
+
+                    int pos = segment.find('(');
+
+                    if (pos != string::npos) {
+                        name = segment.substr(0, pos);
+
+                        int pos2 = segment.find(')', pos);
+                        if (pos2 != string::npos) {
+                            dist = segment.substr(pos + 1, pos2 - pos - 1);
+                        }
                     }
+                    else {
+                        name = segment;
+                    }
+
+                    name.erase(0, name.find_first_not_of(" "));
+                    name.erase(name.find_last_not_of(" ") + 1);
+
+                    matrix_kazan[0].push_back(name);
+                    matrix_kazan[1].push_back(dist);
                 }
 
                 cout << "------------------------------------------------------------------------------------------------------------------------" << endl;
@@ -210,10 +315,8 @@ void direction_train() {
                 cout << " " << endl;
                 cout << "-----------------Выберите станцию --------------------------------------------------------------------------------------" << endl;
                 cout << "Станция: ";
-                cin >> stantion;
+                getline(cin >> ws, stantion);
                 
-
-                int stationIndex = -1;
 
                 for (int i = 0; i < matrix_kazan[0].size(); ++i) {
                     if (matrix_kazan[0][i] == stantion) {
@@ -227,6 +330,8 @@ void direction_train() {
             }
 
         }
+        Dir.clear();
+        Dir.seekg(0);
         Dir.close();
         direction = "Казань";
     }
@@ -252,14 +357,28 @@ void direction_train() {
                     segment.erase(0, segment.find_first_not_of(" >"));
                     segment.erase(segment.find_last_not_of(" >") + 1);
 
-                    smatch match;
-                    regex re(R"((.+?)(?:\((\d+)\))?$)"); // название(число)
-                    if (regex_match(segment, match, re)) {
-                        string name = match[1];
-                        string dist = match[2].matched ? match[2].str() : "0";
-                        matrix_sochi[0].push_back(name);
-                        matrix_sochi[1].push_back(dist);
+                    string name;
+                    string dist = "0";
+
+                    int pos = segment.find('(');
+
+                    if (pos != string::npos) {
+                        name = segment.substr(0, pos);
+
+                        int pos2 = segment.find(')', pos);
+                        if (pos2 != string::npos) {
+                            dist = segment.substr(pos + 1, pos2 - pos - 1);
+                        }
                     }
+                    else {
+                        name = segment;
+                    }
+
+                    name.erase(0, name.find_first_not_of(" "));
+                    name.erase(name.find_last_not_of(" ") + 1);
+
+                    matrix_sochi[0].push_back(name);
+                    matrix_sochi[1].push_back(dist);
                 }
 
                 cout << "------------------------------------------------------------------------------------------------------------------------" << endl;
@@ -269,11 +388,9 @@ void direction_train() {
                 cout << " " << endl;
                 cout << "-----------------Выберите станцию --------------------------------------------------------------------------------------" << endl;
                 cout << "Станция: ";
-                cin >> stantion;
+                getline(cin >> ws, stantion);
                 stantion.erase(0, stantion.find_first_not_of(" "));
                 stantion.erase(stantion.find_last_not_of(" ") + 1);
-
-                int stationIndex = -1;
 
                 for (int i = 0; i < matrix_sochi[0].size(); ++i) {
                     if (matrix_sochi[0][i] == stantion) {
@@ -286,6 +403,8 @@ void direction_train() {
                 }
             }
         }
+        Dir.clear();
+        Dir.seekg(0);
         Dir.close();
         direction = "Сочи";
     }
@@ -311,14 +430,28 @@ void direction_train() {
                     segment.erase(0, segment.find_first_not_of(" >"));
                     segment.erase(segment.find_last_not_of(" >") + 1);
 
-                    smatch match;
-                    regex re(R"((.+?)(?:\((\d+)\))?$)"); // название(число)
-                    if (regex_match(segment, match, re)) {
-                        string name = match[1];
-                        string dist = match[2].matched ? match[2].str() : "0";
-                        matrix_piter[0].push_back(name);
-                        matrix_piter[1].push_back(dist);
+                    string name;
+                    string dist = "0";
+
+                    int pos = segment.find('(');
+
+                    if (pos != string::npos) {
+                        name = segment.substr(0, pos);
+
+                        int pos2 = segment.find(')', pos);
+                        if (pos2 != string::npos) {
+                            dist = segment.substr(pos + 1, pos2 - pos - 1);
+                        }
                     }
+                    else {
+                        name = segment;
+                    }
+
+                    name.erase(0, name.find_first_not_of(" "));
+                    name.erase(name.find_last_not_of(" ") + 1);
+
+                    matrix_piter[0].push_back(name);
+                    matrix_piter[1].push_back(dist);
                 }
 
                 cout << "------------------------------------------------------------------------------------------------------------------------" << endl;
@@ -328,11 +461,9 @@ void direction_train() {
                 cout << " " << endl;
                 cout << "-----------------Выберите станцию --------------------------------------------------------------------------------------" << endl;
                 cout << "Станция: " << endl;
-                cin >> stantion;
+                getline(cin >> ws, stantion);
                 stantion.erase(0, stantion.find_first_not_of(" "));
                 stantion.erase(stantion.find_last_not_of(" ") + 1);
-
-                int stationIndex = -1;
 
                 for (int i = 0; i < matrix_piter[0].size(); ++i) {
                     if (matrix_piter[0][i] == stantion) {
@@ -346,6 +477,8 @@ void direction_train() {
             }
             direction = "Санкт-Петербург";
         }
+        Dir.clear();
+        Dir.seekg(0);
         Dir.close();
     }
 
@@ -395,7 +528,7 @@ void train_carriage() {
 void price_ticket() {
     if (next_func) {
         cout << "=== Итоговая стоимость билета: ===" << endl;
-        price = typeTrain * x * kmToStation * 3;
+        price = typeTrain * x * kmToStation * 5;
         cout << price << "₽" << endl;
         cout << "Подтвердить покупку?" << endl;
         cout << "1 - подтвердить" << endl;
@@ -404,7 +537,7 @@ void price_ticket() {
         cin >> dalee;
         if (dalee == 1) {
             cout << "Покупка произведена успешно!" << endl;
-            cout << trainType;
+            time_arrival();
         }
         else {
             next_func = false;
@@ -456,11 +589,7 @@ string vremya() {
     return string(buffer);
 }
 
-void time_arrival() {
-    if (trainType == "обычный") {
-        // Реализация функции времени прибытия
-    }
-}
+
 
 Ticket purchaseTicket() {
     Ticket ticket;
@@ -492,28 +621,28 @@ void tiket(const Ticket& ticket) {
     cout << "------------------------------------------------------------" << endl;
     cout << "| Номер билета: " << ticket.tN << setw(38) << left << " " << " |" << endl;
     cout << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << ticket.pD << setw(2) << left << " " << " |" << endl;
-    cout << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
-    cout << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
-    cout << "| Маршрут: Москва -> " << direction << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
+    cout << "| Время отправления: "<< depTime << setw(36) << " " << left << " " << " |" << endl;
+    cout << "| Время прибытия: " << arrivalTime << setw(39) << " " << left << " " << " |" << endl;
+    cout << "| Маршрут: Москва -> " << stantion << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
     cout << "| Тип поезда: " << trainType << setw(43 - trainType.length()) << " " << left << " " << " |" << endl;
     cout << "| Тип вагона: " << carriage << setw(43 - carriage.length()) << " " << left << " " << " |" << endl;
     cout << "| Пассажир: " << fullName << setw(45 - fullName.length()) << " " << left << " " << " |" << endl;
     cout << "| " << passportInfo << setw(55 - passportInfo.length()) << " " << left << " " << " |" << endl;
-    cout << "| Место: " << setw(30) << left << " " << " Стоимость: " << price << setw(7) << left << "  " << " |" << endl;
+    cout << "| Место: " << setw(30) << left << " " << " Стоимость: " <<price<< "₽" << setw(7) << left << "  " << " |" << endl;
     cout << "------------------------------------------------------------" << endl;
 
     // Запись в файл
     out_file << "------------------------------------------------------------" << endl;
     out_file << "| Номер билета: " << ticket.tN << setw(38) << left << " " << " |" << endl;
     out_file << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << ticket.pD << setw(2) << left << " " << " |" << endl;
-    out_file << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
-    out_file << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
-    out_file << "| Маршрут: Москва -> " << direction << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
+    out_file << "| Время отправления: " << depTime << setw(36) << " " << left << " " << " |" << endl;
+    out_file << "| Время прибытия: " << arrivalTime << setw(39) << " " << left << " " << " |" << endl;
+    out_file << "| Маршрут: Москва -> " << stantion << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
     out_file << "| Тип поезда: " << trainType << setw(43 - trainType.length()) << " " << left << " " << " |" << endl;
     out_file << "| Тип вагона: " << carriage << setw(43 - carriage.length()) << " " << left << " " << " |" << endl;
     out_file << "| Пассажир: " << fullName << setw(45 - fullName.length()) << " " << left << " " << " |" << endl;
     out_file << "| " << passportInfo << setw(55 - passportInfo.length()) << " " << left << " " << " |" << endl;
-    out_file << "| Место: " << setw(30) << left << " " << " Стоимость: " << price << setw(7) << left << "  " << " |" << endl;
+    out_file << "| Место: " << setw(30) << left << " " << " Стоимость: " << price << "₽" << setw(7) << left << "  " << " |" << endl;
     out_file << "------------------------------------------------------------" << endl;
 
     out_file.close();
@@ -553,7 +682,7 @@ void start() {
 
         cout << "_____________________________________________________________________________________________________________________" << endl;
     } while (zov != 3);
-}
+} 
 
 int main() {
     setlocale(LC_ALL, "RUS");
