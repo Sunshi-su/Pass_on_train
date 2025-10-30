@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -58,8 +57,8 @@ vector<vector<string>> matrix_piter(S);
 
 struct time_arrival_kazan {
     vector<int> time_default_train = { 0,3,4,5,6,7,13 };
-    vector<int> time_speed_train = {0,2,3,4,5,6,10};
-    vector<int> time_more_speed_train = { 0,1,2,3,4,5,8};
+    vector<int> time_speed_train = { 0,2,3,4,5,6,10 };
+    vector<int> time_more_speed_train = { 0,1,2,3,4,5,8 };
 };
 
 struct time_arrival_sochi {
@@ -168,7 +167,7 @@ void time_arrival() {
     arrivalTime = hh + ":" + mm;
 }
 
-void type_ot_train() 
+void type_ot_train()
 {
     cout << "-----------------Доступные поезда -------------------------------------------------------------------------------------" << endl;
 
@@ -316,7 +315,7 @@ void direction_train() {
                 cout << "-----------------Выберите станцию --------------------------------------------------------------------------------------" << endl;
                 cout << "Станция: ";
                 getline(cin >> ws, stantion);
-                
+
 
                 for (int i = 0; i < matrix_kazan[0].size(); ++i) {
                     if (matrix_kazan[0][i] == stantion) {
@@ -570,6 +569,13 @@ int gen() {
 
     return dis(gen);
 }
+int gen1() {
+    static random_device rd;
+    static mt19937 gen(rd());
+    static uniform_int_distribution<> dis(10, 99);
+
+    return dis(gen);
+}
 
 string vremya() {
     auto now = chrono::system_clock::now();
@@ -589,7 +595,17 @@ string vremya() {
     return string(buffer);
 }
 
+// Функция для форматирования цены с ограничением до 6 символов
+string formatPrice(int price) {
+    string priceStr = to_string(price) + "₽";
 
+    // Если цена превышает 6 символов, обрезаем до 6 символов
+    if (priceStr.length() > 6) {
+        priceStr = priceStr.substr(0, 6);
+    }
+
+    return priceStr;
+}
 
 Ticket purchaseTicket() {
     Ticket ticket;
@@ -606,6 +622,20 @@ Ticket purchaseTicket() {
     return ticket;
 }
 
+// Функция для вывода строки с фиксированной шириной
+void printLine(const string& left, const string& right = "") {
+    const int TOTAL_WIDTH = 60;
+    int leftWidth = left.length();
+    int rightWidth = right.length();
+    int middleWidth = TOTAL_WIDTH - leftWidth - rightWidth - 3; // -3 для "| |"
+
+    cout << "| " << left;
+    if (middleWidth > 0) {
+        cout << setw(middleWidth) << " ";
+    }
+    cout << right << " |" << endl;
+}
+
 void tiket(const Ticket& ticket) {
     ofstream out_file;
     out_file.open("../билеты.txt", ios::app);
@@ -614,40 +644,60 @@ void tiket(const Ticket& ticket) {
         exit(1);
     }
 
-    // Форматирование вывода для корректного отображения
     string fullName = ticket.passenger.Familia1 + " " + ticket.passenger.Imya1 + " " + ticket.passenger.Otchestvo1;
     string passportInfo = "Паспорт: " + ticket.passenger.passport1;
+    string formattedPrice = formatPrice(price);
+    string place = to_string(gen1());
+
+    // Обрезаем длинные строки
+    if (fullName.length() > 35) fullName = fullName.substr(0, 35);
+    if (stantion.length() > 25) stantion = stantion.substr(0, 25);
+    if (passportInfo.length() > 35) passportInfo = passportInfo.substr(0, 35);
+
+    // Функция для вывода строки
+    auto printLine = [](const string& text) {
+        cout << "| " << setw(56) << left << text << " |" << endl;
+        };
+
+    auto printTwoColumns = [](const string& left, const string& right) {
+        int total = left.length() + right.length();
+        int spaces = 56 - total;
+        cout << "| " << left;
+        if (spaces > 0) {
+            cout << setw(spaces) << " ";
+        }
+        cout << right << " |" << endl;
+        };
 
     cout << "------------------------------------------------------------" << endl;
-    cout << "| Номер билета: " << ticket.tN << setw(38) << left << " " << " |" << endl;
-    cout << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << ticket.pD << setw(2) << left << " " << " |" << endl;
-    cout << "| Время отправления: "<< depTime << setw(36) << " " << left << " " << " |" << endl;
-    cout << "| Время прибытия: " << arrivalTime << setw(39) << " " << left << " " << " |" << endl;
-    cout << "| Маршрут: Москва -> " << stantion << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
-    cout << "| Тип поезда: " << trainType << setw(43 - trainType.length()) << " " << left << " " << " |" << endl;
-    cout << "| Тип вагона: " << carriage << setw(43 - carriage.length()) << " " << left << " " << " |" << endl;
-    cout << "| Пассажир: " << fullName << setw(45 - fullName.length()) << " " << left << " " << " |" << endl;
-    cout << "| " << passportInfo << setw(55 - passportInfo.length()) << " " << left << " " << " |" << endl;
-    cout << "| Место: " << setw(30) << left << " " << " Стоимость: " <<price<< "₽" << setw(7) << left << "  " << " |" << endl;
+    printTwoColumns("Номер билета: " + to_string(ticket.tN), "");
+    printTwoColumns("Поезд: №" + number, "Дата: " + ticket.pD);
+    printTwoColumns("Время отправления: " + depTime, "");
+    printTwoColumns("Время прибытия: " + arrivalTime, "");
+    printTwoColumns("Маршрут: Москва -> " + stantion, "");
+    printTwoColumns("Тип поезда: " + trainType, "");
+    printTwoColumns("Тип вагона: " + carriage, "");
+    printTwoColumns("Пассажир: " + fullName, "");
+    printTwoColumns(passportInfo, "");
+    printTwoColumns("Место: " + place, "Стоимость: " + formattedPrice);
     cout << "------------------------------------------------------------" << endl;
 
-    // Запись в файл
+    // То же самое для файла
     out_file << "------------------------------------------------------------" << endl;
-    out_file << "| Номер билета: " << ticket.tN << setw(38) << left << " " << " |" << endl;
-    out_file << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << ticket.pD << setw(2) << left << " " << " |" << endl;
-    out_file << "| Время отправления: " << depTime << setw(36) << " " << left << " " << " |" << endl;
-    out_file << "| Время прибытия: " << arrivalTime << setw(39) << " " << left << " " << " |" << endl;
-    out_file << "| Маршрут: Москва -> " << stantion << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
-    out_file << "| Тип поезда: " << trainType << setw(43 - trainType.length()) << " " << left << " " << " |" << endl;
-    out_file << "| Тип вагона: " << carriage << setw(43 - carriage.length()) << " " << left << " " << " |" << endl;
-    out_file << "| Пассажир: " << fullName << setw(45 - fullName.length()) << " " << left << " " << " |" << endl;
-    out_file << "| " << passportInfo << setw(55 - passportInfo.length()) << " " << left << " " << " |" << endl;
-    out_file << "| Место: " << setw(30) << left << " " << " Стоимость: " << price << "₽" << setw(7) << left << "  " << " |" << endl;
+    out_file << "| " << setw(56) << left << ("Номер билета: " + to_string(ticket.tN)) << " |" << endl;
+    out_file << "| " << "Поезд: №" << number << setw(56 - 8 - number.length() - 6 - ticket.pD.length()) << " " << "Дата: " << ticket.pD << " |" << endl;
+    out_file << "| " << setw(56) << left << ("Время отправления: " + depTime) << " |" << endl;
+    out_file << "| " << setw(56) << left << ("Время прибытия: " + arrivalTime) << " |" << endl;
+    out_file << "| " << setw(56) << left << ("Маршрут: Москва -> " + stantion) << " |" << endl;
+    out_file << "| " << setw(56) << left << ("Тип поезда: " + trainType) << " |" << endl;
+    out_file << "| " << setw(56) << left << ("Тип вагона: " + carriage) << " |" << endl;
+    out_file << "| " << setw(56) << left << ("Пассажир: " + fullName) << " |" << endl;
+    out_file << "| " << setw(56) << left << passportInfo << " |" << endl;
+    out_file << "| " << "Место: " << place << setw(56 - 8 - place.length() - 12 - formattedPrice.length()) << " " << "Стоимость: " << formattedPrice << "   |" << endl;
     out_file << "------------------------------------------------------------" << endl;
 
     out_file.close();
 }
-
 void start() {
     do {
         cout << "\n=== РЖД ===\n" << endl;
@@ -682,7 +732,7 @@ void start() {
 
         cout << "_____________________________________________________________________________________________________________________" << endl;
     } while (zov != 3);
-} 
+}
 
 int main() {
     setlocale(LC_ALL, "RUS");
