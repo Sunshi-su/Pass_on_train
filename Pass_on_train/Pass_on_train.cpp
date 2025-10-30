@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -34,7 +35,7 @@ int zov;
 string direction;
 string stantion;
 string number;
-bool next_func = true;
+bool next_func = false;
 int kmToStation = 0;//множитель
 int price = 1;//переменная для итоговой цены
 string trainType;
@@ -51,6 +52,10 @@ vector<vector<string>> matrix_sochi(K);
 //напрвление питер
 const int P = 7, S = 2;
 vector<vector<string>> matrix_piter(S);
+
+string defaul = "обычный";
+string speed = "скоростной";
+string more_speed = "высокоскоростной";
 
 struct time_arrival_kazan {
     vector<int> time_default_train = { 0,3,4,5,6,7,13 };
@@ -127,28 +132,26 @@ void type_ot_train() {
                     cout << "1 - подтвердить" << endl;
                     cout << "2 - вернуться к выбору поездов" << endl;
                     cin >> confirmation;
+
+                    if (s.find(speed) != string::npos) {
+                        trainType = "Cкоростной";
+                        typeTrain = 2;
+                    }
+                    if (s.find(more_speed) != string::npos) {
+                        trainType = "Высокоскоростной";
+                        typeTrain = 3;
+                    }
+                    if (s.find(defaul) != string::npos) {
+                        trainType = "Обычный";
+                        typeTrain = 1;
+                    }
                 }
             }
         }
     } while (confirmation != 1);
-
+    cout << trainType;
     tablo.clear();
     tablo.seekg(0);
-    if (s.find("скоростной") != string::npos) {
-        trainType = "Cкоростной";
-        typeTrain = 2;
-    }
-    if (s.find("высокоскоростной") != string::npos) {
-        trainType = "Высокоскоростной";
-        typeTrain = 3;
-    }
-    if (s.find("обычный") != string::npos) {
-        trainType = "Обычный";
-        typeTrain = 1;
-    }
-    else {
-        next_func = false;
-    }
 
     tablo.close();
 }
@@ -208,8 +211,7 @@ void direction_train() {
                 cout << "-----------------Выберите станцию --------------------------------------------------------------------------------------" << endl;
                 cout << "Станция: ";
                 cin >> stantion;
-                stantion.erase(0, stantion.find_first_not_of(" "));
-                stantion.erase(stantion.find_last_not_of(" ") + 1);
+                
 
                 int stationIndex = -1;
 
@@ -351,10 +353,12 @@ void direction_train() {
     {
         cout << "Станция отсутствует в списке!" << endl;
         found = false;
+        next_func = false;
     }
 
     if (found == true)
     {
+        next_func = true;
         type_ot_train();
     }
 }
@@ -389,19 +393,22 @@ void train_carriage() {
 }
 
 void price_ticket() {
-    cout << "=== Итоговая стоимость билета: ===" << endl;
-    price = typeTrain * x * kmToStation * 30;
-    cout << price << "₽" << endl;
-    cout << "Подтвердить покупку?" << endl;
-    cout << "1 - подтвердить" << endl;
-    cout << "2 - выйти" << endl;
-    int dalee;
-    cin >> dalee;
-    if (dalee == 1) {
-        cout << "Покупка произведена успешно!" << endl;
-    }
-    else {
-        next_func = false;
+    if (next_func) {
+        cout << "=== Итоговая стоимость билета: ===" << endl;
+        price = typeTrain * x * kmToStation * 3;
+        cout << price << "₽" << endl;
+        cout << "Подтвердить покупку?" << endl;
+        cout << "1 - подтвердить" << endl;
+        cout << "2 - выйти" << endl;
+        int dalee;
+        cin >> dalee;
+        if (dalee == 1) {
+            cout << "Покупка произведена успешно!" << endl;
+            cout << trainType;
+        }
+        else {
+            next_func = false;
+        }
     }
 }
 
@@ -487,7 +494,7 @@ void tiket(const Ticket& ticket) {
     cout << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << ticket.pD << setw(2) << left << " " << " |" << endl;
     cout << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
     cout << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
-    cout << "| Маршрут: Москва -> " << stantion << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
+    cout << "| Маршрут: Москва -> " << direction << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
     cout << "| Тип поезда: " << trainType << setw(43 - trainType.length()) << " " << left << " " << " |" << endl;
     cout << "| Тип вагона: " << carriage << setw(43 - carriage.length()) << " " << left << " " << " |" << endl;
     cout << "| Пассажир: " << fullName << setw(45 - fullName.length()) << " " << left << " " << " |" << endl;
@@ -501,7 +508,7 @@ void tiket(const Ticket& ticket) {
     out_file << "| Поезд: №" << number << setw(27) << left << " " << "Дата: " << ticket.pD << setw(2) << left << " " << " |" << endl;
     out_file << "| Время отправления: " << setw(36) << " " << left << " " << " |" << endl;
     out_file << "| Время прибытия: " << setw(39) << " " << left << " " << " |" << endl;
-    out_file << "| Маршрут: Москва -> " << stantion << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
+    out_file << "| Маршрут: Москва -> " << direction << setw(46 - (stantion.length() + 11)) << " " << left << " " << " |" << endl;
     out_file << "| Тип поезда: " << trainType << setw(43 - trainType.length()) << " " << left << " " << " |" << endl;
     out_file << "| Тип вагона: " << carriage << setw(43 - carriage.length()) << " " << left << " " << " |" << endl;
     out_file << "| Пассажир: " << fullName << setw(45 - fullName.length()) << " " << left << " " << " |" << endl;
