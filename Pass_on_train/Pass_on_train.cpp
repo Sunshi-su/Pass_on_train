@@ -5,7 +5,6 @@
 #include <fstream>
 #include <windows.h>
 #include <algorithm>
-#include <regex>
 #include <sstream>
 #include <random>
 #include <chrono>
@@ -96,8 +95,8 @@ void spisok() {
 void time_arrival() {
 
     int addHours = 0;
-    int h = stoi(depTime.substr(0, 2));
-    int m = stoi(depTime.substr(3, 2));
+    int h = stoi(depTime.substr(0, 2)); //вырезаем время (часы)
+    int m = stoi(depTime.substr(3, 2)); //вырезаем время (минуты)
 
 
     if (direction == "Казань") {
