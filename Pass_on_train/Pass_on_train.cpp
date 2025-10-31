@@ -245,7 +245,7 @@ void type_ot_train()
 
 void direction_train() {
 
-    matrix_kazan[0].clear();
+    matrix_kazan[0].clear(); //очищаем матрицы для правильной работы
     matrix_kazan[1].clear();
     matrix_sochi[0].clear();
     matrix_sochi[1].clear();
@@ -276,7 +276,7 @@ void direction_train() {
                 stringstream ss(n);
                 string segment;
 
-                // Разделяем по "->"
+                // Разделяем станции по "->"
                 while (getline(ss, segment, '-')) {
                     if (segment == ">") continue;
                     segment.erase(0, segment.find_first_not_of(" >"));
@@ -288,11 +288,11 @@ void direction_train() {
                     int pos = segment.find('(');
 
                     if (pos != string::npos) {
-                        name = segment.substr(0, pos);
+                        name = segment.substr(0, pos); //название станции
 
                         int pos2 = segment.find(')', pos);
                         if (pos2 != string::npos) {
-                            dist = segment.substr(pos + 1, pos2 - pos - 1);
+                            dist = segment.substr(pos + 1, pos2 - pos - 1); //км до станции
                         }
                     }
                     else {
@@ -548,16 +548,16 @@ Passenger inputPassengerData() {
     cout << "\n=== ДАННЫЕ ПАССАЖИРА ===\n" << endl;
     cout << "Введите фамилию: ";
     cin >> passenger.Familia;
-    passenger.Familia1 = passenger.Familia.substr(0, 20); // Исправлено присваивание
+    passenger.Familia1 = passenger.Familia.substr(0, 20); 
     cout << "Введите имя: ";
     cin >> passenger.Imya;
-    passenger.Imya1 = passenger.Imya.substr(0, 15); // Исправлено присваивание
+    passenger.Imya1 = passenger.Imya.substr(0, 15); 
     cout << "Введите отчество: ";
     cin >> passenger.Otchestvo;
-    passenger.Otchestvo1 = passenger.Otchestvo.substr(0, 20); // Исправлено присваивание
+    passenger.Otchestvo1 = passenger.Otchestvo.substr(0, 20);
     cout << "Введите номер паспорта: ";
     cin >> passenger.passport;
-    passenger.passport1 = passenger.passport.substr(0, 10); // Исправлено присваивание
+    passenger.passport1 = passenger.passport.substr(0, 10);
     return passenger;
 }
 
